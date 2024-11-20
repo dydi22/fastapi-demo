@@ -14,8 +14,8 @@ DBUSER = "ds2022"
 DBPASS = os.getenv('DBPASS')
 DB = "atv7xh"
 
-db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB)
-cur=db.cursor()
+# db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB, ssl_disabled=True)
+# cur=db.cursor()
 
 app = FastAPI()
 
@@ -37,7 +37,10 @@ def get_db_connection():
     return db, cursor
 
 @app.get('/genres')
-def get_genres():
+async def get_genres():
+    # db.cmd_refresh(refresh)
+    db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB, ssl_disabled=True)
+    cur = db.cursor()
     query = "SELECT * FROM genres ORDER BY genreid;"
     try:    
         db, cur = get_db_connection()  # Ensure this function is correctly implemented
@@ -45,34 +48,24 @@ def get_genres():
         results = cur.fetchall()  # Fetch all rows
         return {"genres": results}  # Return the results as JSON
     except Error as e:
-        return {"Error": f"MySQL Error: {str(e)}"}
-    finally:
-        if 'cur' in locals() and cur:
-            cur.close()
-        if 'db' in locals() and db.is_connected():
-            db.close()
-    
-@app.get("/songs")
-def get_songs():
-  query = """
-  SELECT
-    songs.title,
-    songs.album,
-    songs.artist,
-    songs.year,
-    songs.file,
-    genres.genre
-  FROM songs
-  JOIN genres ON  songs.genre = genres.genreid;
-  """  
-  try: 
-        db, cur = get_db_connection()
+        print("MySQL Error: ", str(e))
+        cur.close()
+        db.close()
+        return {"Error": "MySQL Error: " + str(e)}
+
+@app.get('/songs')
+async def get_genres():
+    # db.cmd_refresh(refresh)
+    db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB, ssl_disabled=True)
+    cur = db.cursor()
+    query = "SELECT songs.title, songs.album, songs.artist, songs.year, songs.file, songs.image, genres.genre FROM songs JOIN genres WHERE songs.genre = genres.genreid;"
+    try:
         cur.execute(query)
         results = cur.fetchall()  # Fetch all rows as dictionaries
         return{"songs": results}
-  except Error as e:
+    except Error as e:
         return{"Error": f"MySQL Error: {str(e)}"}
-  finally:
+    finally:
         if 'cur' in locals() and cur:
             cur.close()
         if 'db' in locals() and db.is_connected():
