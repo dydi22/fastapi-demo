@@ -1,8 +1,8 @@
 uvicorn
-fastapi[standard]
-# typing
-# pydantic
+fastapi
+typing
+pydantic
 mysql-connector-python
-# pymongo
-# dnspython
-# mysqlclient
+pymongo
+dnspython
+mysqlclient
