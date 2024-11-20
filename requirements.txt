@@ -1,5 +1,5 @@
 uvicorn
-fastapi
+fastapi[standard]
 typing
 pydantic
 mysql-connector-python
