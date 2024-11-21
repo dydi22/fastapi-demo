@@ -39,7 +39,7 @@ def get_db_connection():
 @app.get('/genres')
 async def get_genres():
     # db.cmd_refresh(refresh)
-    db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB, ssl_disabled=True)
+    db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB)
     cur = db.cursor()
     query = "SELECT * FROM genres ORDER BY genreid;"
     try:    
@@ -56,7 +56,7 @@ async def get_genres():
 @app.get('/songs')
 async def get_genres():
     # db.cmd_refresh(refresh)
-    db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB, ssl_disabled=True)
+    db = mysql.connector.connect(user=DBUSER, host=DBHOST, password=DBPASS, database=DB)
     cur = db.cursor()
     query = "SELECT songs.title, songs.album, songs.artist, songs.year, songs.file, songs.image, genres.genre FROM songs JOIN genres WHERE songs.genre = genres.genreid;"
     try:
